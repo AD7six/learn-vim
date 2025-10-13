@@ -147,6 +147,12 @@ function M.check_current_exercise()
                 end
             end
         end
+        if not is_correct and LEARN_VIM.config.debug then
+            vim.notify("Expected contents:\n" ..
+            table.concat(target_lines,"\n") ..
+            "\n\nGot:\n" ..
+            table.concat(current_lines, "\n"))
+        end
 
     -- New validation type: check_buffer_content_regex
     elseif validation.type == 'check_buffer_content_regex' then
@@ -166,6 +172,11 @@ function M.check_current_exercise()
         is_correct = (target_cursor[1] == Constants.ANY_LINE or current_line == target_cursor[1]) and
                      (target_cursor[2] == Constants.ANY_COLUMN or current_col == target_cursor[2])
 
+        if not is_correct and LEARN_VIM.config.debug then
+            vim.notify("Expected cursor position:\n(" .. target_cursor[1] .. ", "
+            .. target_cursor[2] .. ")\n" .. "Actual:\n(" .. current_line .. ", "
+            .. current_col .. ")", vim.log.levels.INFO)
+        end
     elseif validation.type == 'check_mode' then
         local current_mode = vim.api.nvim_get_mode().mode
         is_correct = (current_mode == validation.target_mode)
